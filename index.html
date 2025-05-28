@@ -124,7 +124,7 @@
     let isDragging = false;
     let scratchedPixels = 0;
     let totalPixels = 0;
-    let revealThreshold = 80;
+    let revealThreshold = 48;
 
     // Размеры canvas
     const canvasWidth = 350;
@@ -132,7 +132,7 @@
 
     // Параметры стирания
     const scratchRadius = 25; // Увеличили размер кисти
-    const scratchHardness = 0.5; // Полностью непрозрачное стирание
+    const scratchHardness = 0.6; // Полностью непрозрачное стирание
 
     // Загружаем данные о позах
     fetch('poses/data/poses_data.json')
