@@ -3,337 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scratch & Sex</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <title>Игра для пар</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-        }
-
-        #app {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-        }
-
-        #title {
-            font-size: 24px;
-            margin-bottom: 15px;
+            background-color: #f8f8f8;
             color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
         }
-
-        #pose-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 10px 0;
-            color: #e91e63;
-            min-height: 30px;
-        }
-
-        #description {
-            max-width: 320px;
-            margin-top: 15px;
-            font-size: 16px;
+        
+        .header {
             text-align: center;
-            min-height: 60px;
-            color: #555;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            display: none;
+            margin-bottom: 20px;
         }
-
-        #btnRandom {
-            margin: 15px 0;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background: #e91e63;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            transition: all 0.3s;
-        }
-
-        #btnRandom:hover {
-            background: #c2185b;
-            transform: scale(1.05);
-        }
-
-        #canvasContainer {
+        
+        .carousel {
+            width: 100%;
+            max-width: 400px;
             position: relative;
+            margin-bottom: 30px;
         }
-
-        #scratch-percent {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 14px;
-            display: none;
-        }
-
-        canvas {
-            border: 2px solid #ddd;
+        
+        .levels {
+            display: flex;
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        .instructions {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #777;
+        
+        .level {
+            flex: 0 0 100%;
+            scroll-snap-align: start;
+            padding: 20px;
             text-align: center;
+            background-color: white;
+            border-radius: 10px;
+        }
+        
+        .level h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .level h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .scratch-card {
+            width: 100%;
+            height: 200px;
+            background-color: #ddd;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scratch-task {
+            width: 100%;
+            height: 100px;
+            background-color: #ddd;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scratch-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .scratch-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ccc;
+            cursor: pointer;
+        }
+        
+        .nav-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ddd;
+            cursor: pointer;
+        }
+        
+        .dot.active {
+            background-color: #ff6b6b;
+        }
+        
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-<div id="app">
-    <div id="title">Scratch & Sex</div>
-    <div id="pose-name"></div>
-
-    <div id="canvasContainer">
-        <div id="scratch-percent">0%</div>
-        <canvas id="scratchCanvas"></canvas>
+    <div class="header">
+        <h1>Игра для пар</h1>
     </div>
-
-    <button id="btnRandom">Новая поза</button>
-    <div id="description"></div>
-    <div class="instructions">Потрите область карточки, чтобы увидеть позу</div>
-</div>
-
-<script>
-    let poses = [];
-    let currentPose = null;
-    let canvas, ctx;
-    let coverCanvas, coverCtx;
-    let img = new Image();
-    let isDragging = false;
-    let scratchedPixels = 0;
-    let totalPixels = 0;
-    let revealThreshold = 48;
-
-    // Размеры canvas
-    const canvasWidth = 350;
-    const canvasHeight = 350;
-
-    // Параметры стирания
-    const scratchRadius = 25; // Увеличили размер кисти
-    const scratchHardness = 0.6; // Полностью непрозрачное стирание
-
-    // Загружаем данные о позах
-    fetch('poses/data/poses_data.json')
-        .then(response => response.json())
-        .then(data => {
-            poses = data;
-            initCanvas();
-            loadRandomPose();
-        })
-        .catch(error => {
-            console.error('Ошибка загрузки данных:', error);
-            poses = [
-                {
-                    id: 475,
-                    название: "Кунилингус раком",
-                    описание: "Женщина становится поперек стула в коленно-локтевую позицию, что позволяет партнеру заниматься оральным сексом."
-                },
-                {
-                    id: 474,
-                    название: "Скат",
-                    описание: "Женщина ложится ягодицами на поверхность, что позволяет партнерам выделять много энергии во время секса."
-                },
-            ];
-            initCanvas();
-            loadRandomPose();
+    
+    <div class="carousel">
+        <div class="levels" id="levels">
+            <div class="level" data-level="easy">
+                <h1>ЛЕГКИЙ</h1>
+                <h2>Уровень</h2>
+                
+                <div class="cards-container">
+                    <div class="scratch-card" id="pose-card-1">
+                        <div class="scratch-content">Поза: Романтическое объятие</div>
+                        <div class="scratch-overlay" id="pose-overlay-1"></div>
+                    </div>
+                    
+                    <div class="scratch-task" id="task-card-1">
+                        <div class="scratch-content">Задание: Нежно поцелуйте партнера в шею</div>
+                        <div class="scratch-overlay" id="task-overlay-1"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="level" data-level="medium">
+                <h1>СРЕДНИЙ</h1>
+                <h2>Уровень</h2>
+                
+                <div class="cards-container">
+                    <div class="scratch-card" id="pose-card-2">
+                        <div class="scratch-content">Поза: Страстный танец</div>
+                        <div class="scratch-overlay" id="pose-overlay-2"></div>
+                    </div>
+                    
+                    <div class="scratch-task" id="task-card-2">
+                        <div class="scratch-content">Задание: Снимите с партнера один предмет одежды зубами</div>
+                        <div class="scratch-overlay" id="task-overlay-2"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="level" data-level="hard">
+                <h1>СЛОЖНЫЙ</h1>
+                <h2>Уровень</h2>
+                
+                <div class="cards-container">
+                    <div class="scratch-card" id="pose-card-3">
+                        <div class="scratch-content">Поза: Гибкие позиции</div>
+                        <div class="scratch-overlay" id="pose-overlay-3"></div>
+                    </div>
+                    
+                    <div class="scratch-task" id="task-card-3">
+                        <div class="scratch-content">Задание: Используйте повязку на глаза и лед</div>
+                        <div class="scratch-overlay" id="task-overlay-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-dots">
+            <div class="dot active" data-index="0"></div>
+            <div class="dot" data-index="1"></div>
+            <div class="dot" data-index="2"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Инициализация карусели
+        const levels = document.getElementById('levels');
+        const dots = document.querySelectorAll('.dot');
+        let currentIndex = 0;
+        
+        // Обработчики для точек навигации
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const index = parseInt(dot.getAttribute('data-index'));
+                scrollToLevel(index);
+            });
         });
-
-    function initCanvas() {
-        canvas = document.getElementById('scratchCanvas');
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-        ctx = canvas.getContext('2d');
-
-        coverCanvas = document.createElement('canvas');
-        coverCanvas.width = canvasWidth;
-        coverCanvas.height = canvasHeight;
-        coverCtx = coverCanvas.getContext('2d');
-
-        // Настройка событий
-        canvas.addEventListener('mousedown', startScratch);
-        canvas.addEventListener('mousemove', scratch);
-        canvas.addEventListener('mouseup', endScratch);
-        canvas.addEventListener('mouseleave', endScratch);
-
-        // Для мобильных устройств
-        canvas.addEventListener('touchstart', handleTouch);
-        canvas.addEventListener('touchmove', handleTouch);
-        canvas.addEventListener('touchend', endScratch);
-
-        document.getElementById('btnRandom').addEventListener('click', loadRandomPose);
-    }
-
-    function handleTouch(e) {
-        e.preventDefault();
-        if (e.touches) {
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent(
-                e.type === 'touchstart' ? 'mousedown' : 'mousemove',
-                {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
+        
+        // Прокрутка к определенному уровню
+        function scrollToLevel(index) {
+            const level = document.querySelectorAll('.level')[index];
+            level.scrollIntoView({ behavior: 'smooth' });
+            updateDots(index);
+            currentIndex = index;
+        }
+        
+        // Обновление активной точки
+        function updateDots(index) {
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+        
+        // Обработчик скролла для определения текущего уровня
+        levels.addEventListener('scroll', () => {
+            const scrollPosition = levels.scrollLeft;
+            const levelWidth = levels.clientWidth;
+            const newIndex = Math.round(scrollPosition / levelWidth);
+            
+            if (newIndex !== currentIndex) {
+                currentIndex = newIndex;
+                updateDots(currentIndex);
+            }
+        });
+        
+        // Инициализация скретч-карточек
+        function initScratchCard(overlayId, contentId) {
+            const overlay = document.getElementById(overlayId);
+            const content = document.getElementById(contentId);
+            let isScratching = false;
+            let lastPoint = null;
+            
+            overlay.addEventListener('mousedown', (e) => {
+                isScratching = true;
+                scratch(e);
+            });
+            
+            overlay.addEventListener('touchstart', (e) => {
+                isScratching = true;
+                scratch(e.touches[0]);
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isScratching = false;
+                lastPoint = null;
+            });
+            
+            document.addEventListener('touchend', () => {
+                isScratching = false;
+                lastPoint = null;
+            });
+            
+            overlay.addEventListener('mousemove', (e) => {
+                if (isScratching) scratch(e);
+            });
+            
+            overlay.addEventListener('touchmove', (e) => {
+                if (isScratching) scratch(e.touches[0]);
+            });
+            
+            function scratch(e) {
+                const rect = overlay.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                if (lastPoint) {
+                    const ctx = overlay.getContext('2d');
+                    if (!ctx) return;
+                    
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = 30;
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = 'rgba(0,0,0,1)';
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(lastPoint.x, lastPoint.y);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    
+                    checkScratchCompletion(overlay);
                 }
-            );
-            canvas.dispatchEvent(mouseEvent);
+                
+                lastPoint = { x, y };
+            }
+            
+            function checkScratchCompletion(overlay) {
+                const canvas = overlay;
+                const ctx = canvas.getContext('2d');
+                
+                if (!ctx) return;
+                
+                // Проверяем, сколько процентов холста было "поцарапано"
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const pixels = imageData.data;
+                let transparentPixels = 0;
+                
+                for (let i = 3; i < pixels.length; i += 4) {
+                    if (pixels[i] === 0) {
+                        transparentPixels++;
+                    }
+                }
+                
+                const percentScratched = (transparentPixels / (pixels.length / 4)) * 100;
+                
+                if (percentScratched > 60) {
+                    overlay.style.display = 'none';
+                }
+            }
+            
+            // Инициализация canvas для скретч-карточки
+            function initCanvas() {
+                const canvas = document.createElement('canvas');
+                canvas.width = overlay.offsetWidth;
+                canvas.height = overlay.offsetHeight;
+                canvas.style.position = 'absolute';
+                canvas.style.top = '0';
+                canvas.style.left = '0';
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ccc';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                overlay.innerHTML = '';
+                overlay.appendChild(canvas);
+            }
+            
+            initCanvas();
         }
-    }
-
-    function startScratch(e) {
-        isDragging = true;
-        scratch(e);
-    }
-
-    function scratch(e) {
-        if (!isDragging) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        // Стираем область полностью без прозрачности
-        coverCtx.globalCompositeOperation = 'destination-out';
-        coverCtx.beginPath();
-        coverCtx.arc(x, y, scratchRadius, 0, Math.PI * 2);
-        coverCtx.fillStyle = `rgba(0, 0, 0, ${scratchHardness})`;
-        coverCtx.fill();
-
-        // Также стираем соседние области для более быстрого эффекта
-        for (let i = 0; i < 3; i++) {
-            const offsetX = (Math.random() - 0.5) * scratchRadius;
-            const offsetY = (Math.random() - 0.5) * scratchRadius;
-            coverCtx.beginPath();
-            coverCtx.arc(x + offsetX, y + offsetY, scratchRadius / 2, 0, Math.PI * 2);
-            coverCtx.fill();
+        
+        // Инициализация всех скретч-карточек
+        for (let i = 1; i <= 3; i++) {
+            initScratchCard(`pose-overlay-${i}`, `pose-card-${i}`);
+            initScratchCard(`task-overlay-${i}`, `task-card-${i}`);
         }
-
-        updateScratchedPercentage();
-        drawScratchCard();
-    }
-
-    function endScratch() {
-        isDragging = false;
-    }
-
-    function updateScratchedPercentage() {
-        const imageData = coverCtx.getImageData(0, 0, coverCanvas.width, coverCanvas.height);
-        const pixels = imageData.data;
-
-        totalPixels = 0;
-        for (let i = 0; i < pixels.length; i += 4) {
-            if (pixels[i + 3] > 0) totalPixels++;
-        }
-
-        scratchedPixels = 0;
-        for (let i = 0; i < pixels.length; i += 4) {
-            if (pixels[i + 3] === 0) scratchedPixels++;
-        }
-
-        const percent = Math.min(100, Math.round((scratchedPixels / totalPixels) * 100));
-
-        document.getElementById('scratch-percent').textContent = percent + '%';
-        document.getElementById('scratch-percent').style.display = 'block';
-
-        if (percent >= revealThreshold) {
-            document.getElementById('description').style.display = 'block';
-            document.getElementById('pose-name').style.opacity = '1'; // Показываем название
-            coverCtx.clearRect(0, 0, coverCanvas.width, coverCanvas.height);
-        }
-
-    }
-
-    function drawScratchCard() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        if (img.complete && img.naturalHeight !== 0) {
-            const ratio = Math.min(
-                canvas.width / img.width,
-                canvas.height / img.height
-            );
-            const width = img.width * ratio;
-            const height = img.height * ratio;
-            const x = (canvas.width - width) / 2;
-            const y = (canvas.height - height) / 2;
-
-            ctx.drawImage(img, x, y, width, height);
-        }
-
-        ctx.drawImage(coverCanvas, 0, 0);
-        console.log("Redrawing scratch card");
-
-    }
-
-    function loadRandomPose() {
-        currentPose = poses[Math.floor(Math.random() * poses.length)];
-        scratchedPixels = 0;
-        totalPixels = 0;
-
-        const poseNameElement = document.getElementById('pose-name');
-        poseNameElement.textContent = currentPose.название;
-        poseNameElement.style.opacity = '0'; // Скрываем
-
-        document.getElementById('description').textContent = currentPose.описание;
-        document.getElementById('description').style.display = 'none';
-        document.getElementById('scratch-percent').textContent = '0%';
-
-        // Очистка скретч-слоя (чтобы он не был прозрачным)
-        coverCtx.globalCompositeOperation = 'source-over';
-        coverCtx.clearRect(0, 0, coverCanvas.width, coverCanvas.height);
-        coverCtx.fillStyle = '#cccccc';
-        coverCtx.fillRect(0, 0, coverCanvas.width, coverCanvas.height);
-        addMetallicTexture();
-
-        // Отрисовать его сразу (до загрузки картинки)
-        drawScratchCard();
-
-        // Принудительно сбрасываем картинку
-        img.onload = () => {
-            drawScratchCard(); // Когда картинка загрузится — ещё раз нарисуем
-        };
-        img.src = ''; // Принудительный сброс
-        img.src = `poses/pictures/${currentPose.id}.png`;
-    }
-
-
-    function addMetallicTexture() {
-        // Создаем эффект металлической поверхности
-        for (let i = 0; i < 500; i++) {
-            const x = Math.random() * coverCanvas.width;
-            const y = Math.random() * coverCanvas.height;
-            const w = Math.random() * 5 + 1;
-            const h = Math.random() * 30 + 5;
-            const angle = Math.random() * Math.PI;
-            const brightness = Math.random() * 100 + 155;
-
-            coverCtx.save();
-            coverCtx.translate(x, y);
-            coverCtx.rotate(angle);
-            coverCtx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${Math.random() * 0.5 + 0.3})`;
-            coverCtx.fillRect(-w / 2, -h / 2, w, h);
-            coverCtx.restore();
-        }
-    }
-</script>
+    </script>
 </body>
 </html>
