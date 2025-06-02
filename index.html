@@ -10,10 +10,11 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
+            user-select: none;
         }
         
         body {
-            background-color: #f8f8f8;
+            background-color: #f5f5f5;
             color: #333;
             display: flex;
             flex-direction: column;
@@ -42,7 +43,6 @@
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .level {
@@ -50,45 +50,49 @@
             scroll-snap-align: start;
             padding: 20px;
             text-align: center;
-            background-color: white;
+            background-color: #fff;
             border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         .level h1 {
             font-size: 24px;
             margin-bottom: 10px;
+            color: #ff6b6b;
         }
         
         .level h2 {
             font-size: 18px;
             margin-bottom: 20px;
+            color: #888;
+            font-weight: normal;
         }
         
         .cards-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             margin-top: 20px;
         }
         
         .scratch-card {
             width: 100%;
             height: 200px;
-            background-color: #ddd;
+            background-color: #e0e0e0;
             border-radius: 10px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         
         .scratch-task {
             width: 100%;
-            height: 100px;
-            background-color: #ddd;
+            height: 80px;
+            background-color: #e0e0e0;
             border-radius: 10px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         
         .scratch-content {
@@ -105,6 +109,7 @@
             font-weight: bold;
             padding: 15px;
             text-align: center;
+            border-radius: 10px;
         }
         
         .scratch-overlay {
@@ -113,8 +118,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #ccc;
+            background-color: #e0e0e0;
             cursor: pointer;
+            border-radius: 10px;
         }
         
         .nav-dots {
@@ -125,11 +131,12 @@
         }
         
         .dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background-color: #ddd;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         
         .dot.active {
@@ -138,6 +145,12 @@
         
         .hidden {
             display: none;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 15px 0;
         }
     </style>
 </head>
@@ -152,15 +165,17 @@
                 <h1>ЛЕГКИЙ</h1>
                 <h2>Уровень</h2>
                 
+                <div class="divider"></div>
+                
                 <div class="cards-container">
-                    <div class="scratch-card" id="pose-card-1">
+                    <div class="scratch-card">
                         <div class="scratch-content">Поза: Романтическое объятие</div>
-                        <div class="scratch-overlay" id="pose-overlay-1"></div>
+                        <canvas class="scratch-overlay" id="pose-overlay-1"></canvas>
                     </div>
                     
-                    <div class="scratch-task" id="task-card-1">
+                    <div class="scratch-task">
                         <div class="scratch-content">Задание: Нежно поцелуйте партнера в шею</div>
-                        <div class="scratch-overlay" id="task-overlay-1"></div>
+                        <canvas class="scratch-overlay" id="task-overlay-1"></canvas>
                     </div>
                 </div>
             </div>
@@ -169,15 +184,17 @@
                 <h1>СРЕДНИЙ</h1>
                 <h2>Уровень</h2>
                 
+                <div class="divider"></div>
+                
                 <div class="cards-container">
-                    <div class="scratch-card" id="pose-card-2">
+                    <div class="scratch-card">
                         <div class="scratch-content">Поза: Страстный танец</div>
-                        <div class="scratch-overlay" id="pose-overlay-2"></div>
+                        <canvas class="scratch-overlay" id="pose-overlay-2"></canvas>
                     </div>
                     
-                    <div class="scratch-task" id="task-card-2">
+                    <div class="scratch-task">
                         <div class="scratch-content">Задание: Снимите с партнера один предмет одежды зубами</div>
-                        <div class="scratch-overlay" id="task-overlay-2"></div>
+                        <canvas class="scratch-overlay" id="task-overlay-2"></canvas>
                     </div>
                 </div>
             </div>
@@ -186,15 +203,17 @@
                 <h1>СЛОЖНЫЙ</h1>
                 <h2>Уровень</h2>
                 
+                <div class="divider"></div>
+                
                 <div class="cards-container">
-                    <div class="scratch-card" id="pose-card-3">
+                    <div class="scratch-card">
                         <div class="scratch-content">Поза: Гибкие позиции</div>
-                        <div class="scratch-overlay" id="pose-overlay-3"></div>
+                        <canvas class="scratch-overlay" id="pose-overlay-3"></canvas>
                     </div>
                     
-                    <div class="scratch-task" id="task-card-3">
+                    <div class="scratch-task">
                         <div class="scratch-content">Задание: Используйте повязку на глаза и лед</div>
-                        <div class="scratch-overlay" id="task-overlay-3"></div>
+                        <canvas class="scratch-overlay" id="task-overlay-3"></canvas>
                     </div>
                 </div>
             </div>
@@ -212,6 +231,9 @@
         const levels = document.getElementById('levels');
         const dots = document.querySelectorAll('.dot');
         let currentIndex = 0;
+        let isDragging = false;
+        let startX = 0;
+        let scrollLeft = 0;
         
         // Обработчики для точек навигации
         dots.forEach(dot => {
@@ -236,6 +258,32 @@
             });
         }
         
+        // Обработчики для перетаскивания карусели
+        levels.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.pageX - levels.offsetLeft;
+            scrollLeft = levels.scrollLeft;
+            levels.style.scrollBehavior = 'auto';
+        });
+        
+        levels.addEventListener('mouseleave', () => {
+            isDragging = false;
+            levels.style.scrollBehavior = 'smooth';
+        });
+        
+        levels.addEventListener('mouseup', () => {
+            isDragging = false;
+            levels.style.scrollBehavior = 'smooth';
+        });
+        
+        levels.addEventListener('mousemove', (e) => {
+            if(!isDragging) return;
+            e.preventDefault();
+            const x = e.pageX - levels.offsetLeft;
+            const walk = (x - startX) * 2;
+            levels.scrollLeft = scrollLeft - walk;
+        });
+        
         // Обработчик скролла для определения текущего уровня
         levels.addEventListener('scroll', () => {
             const scrollPosition = levels.scrollLeft;
@@ -249,72 +297,102 @@
         });
         
         // Инициализация скретч-карточек
-        function initScratchCard(overlayId, contentId) {
-            const overlay = document.getElementById(overlayId);
-            const content = document.getElementById(contentId);
+        function initScratchCard(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const container = canvas.parentElement;
+            const content = container.querySelector('.scratch-content');
+            
+            // Установка размеров canvas
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Заполнение canvas серым цветом
+            ctx.fillStyle = '#e0e0e0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Добавление текста "Потрите..." если это первая карточка
+            if(canvasId === 'pose-overlay-1') {
+                ctx.fillStyle = '#888';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Потрите область карточки', canvas.width/2, canvas.height/2);
+            }
+            
             let isScratching = false;
             let lastPoint = null;
             
-            overlay.addEventListener('mousedown', (e) => {
-                isScratching = true;
-                scratch(e);
-            });
+            // Обработчики событий
+            canvas.addEventListener('mousedown', startScratch);
+            canvas.addEventListener('touchstart', startScratchTouch);
             
-            overlay.addEventListener('touchstart', (e) => {
-                isScratching = true;
-                scratch(e.touches[0]);
-            });
+            document.addEventListener('mouseup', endScratch);
+            document.addEventListener('touchend', endScratch);
             
-            document.addEventListener('mouseup', () => {
+            canvas.addEventListener('mousemove', scratch);
+            canvas.addEventListener('touchmove', scratchTouch);
+            
+            function startScratch(e) {
+                isScratching = true;
+                const pos = getPosition(e);
+                lastPoint = pos;
+                e.preventDefault();
+            }
+            
+            function startScratchTouch(e) {
+                isScratching = true;
+                const pos = getPosition(e.touches[0]);
+                lastPoint = pos;
+                e.preventDefault();
+            }
+            
+            function endScratch() {
                 isScratching = false;
                 lastPoint = null;
-            });
-            
-            document.addEventListener('touchend', () => {
-                isScratching = false;
-                lastPoint = null;
-            });
-            
-            overlay.addEventListener('mousemove', (e) => {
-                if (isScratching) scratch(e);
-            });
-            
-            overlay.addEventListener('touchmove', (e) => {
-                if (isScratching) scratch(e.touches[0]);
-            });
+            }
             
             function scratch(e) {
-                const rect = overlay.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
+                if (!isScratching) return;
+                const pos = getPosition(e);
+                drawScratch(pos);
+                checkScratchCompletion();
+                e.preventDefault();
+            }
+            
+            function scratchTouch(e) {
+                if (!isScratching) return;
+                const pos = getPosition(e.touches[0]);
+                drawScratch(pos);
+                checkScratchCompletion();
+                e.preventDefault();
+            }
+            
+            function getPosition(e) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+            
+            function drawScratch(pos) {
                 if (lastPoint) {
-                    const ctx = overlay.getContext('2d');
-                    if (!ctx) return;
-                    
                     ctx.globalCompositeOperation = 'destination-out';
                     ctx.lineWidth = 30;
                     ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
                     ctx.strokeStyle = 'rgba(0,0,0,1)';
                     
                     ctx.beginPath();
                     ctx.moveTo(lastPoint.x, lastPoint.y);
-                    ctx.lineTo(x, y);
+                    ctx.lineTo(pos.x, pos.y);
                     ctx.stroke();
-                    
-                    checkScratchCompletion(overlay);
                 }
-                
-                lastPoint = { x, y };
+                lastPoint = pos;
             }
             
-            function checkScratchCompletion(overlay) {
-                const canvas = overlay;
-                const ctx = canvas.getContext('2d');
-                
-                if (!ctx) return;
-                
-                // Проверяем, сколько процентов холста было "поцарапано"
+            function checkScratchCompletion() {
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const pixels = imageData.data;
                 let transparentPixels = 0;
@@ -327,38 +405,22 @@
                 
                 const percentScratched = (transparentPixels / (pixels.length / 4)) * 100;
                 
-                if (percentScratched > 60) {
-                    overlay.style.display = 'none';
+                if (percentScratched > 40) {
+                    canvas.style.opacity = '0';
+                    setTimeout(() => {
+                        canvas.style.display = 'none';
+                    }, 300);
                 }
             }
-            
-            // Инициализация canvas для скретч-карточки
-            function initCanvas() {
-                const canvas = document.createElement('canvas');
-                canvas.width = overlay.offsetWidth;
-                canvas.height = overlay.offsetHeight;
-                canvas.style.position = 'absolute';
-                canvas.style.top = '0';
-                canvas.style.left = '0';
-                canvas.style.width = '100%';
-                canvas.style.height = '100%';
-                
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#ccc';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                overlay.innerHTML = '';
-                overlay.appendChild(canvas);
-            }
-            
-            initCanvas();
         }
         
         // Инициализация всех скретч-карточек
-        for (let i = 1; i <= 3; i++) {
-            initScratchCard(`pose-overlay-${i}`, `pose-card-${i}`);
-            initScratchCard(`task-overlay-${i}`, `task-card-${i}`);
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            for (let i = 1; i <= 3; i++) {
+                initScratchCard(`pose-overlay-${i}`);
+                initScratchCard(`task-overlay-${i}`);
+            }
+        });
     </script>
 </body>
 </html>
