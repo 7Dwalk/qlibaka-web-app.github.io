@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скретч-карусель</title>
+    <style>
+        body {
+            background: #080808;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            color: #E91E63;
+            font-size: 36px;
+            margin-bottom: 0;
+            transition: all 0.3s ease;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #aaa;
+            margin-bottom: 25px;
+        }
+
+        .carousel-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease;
+            width: 300%;
+        }
+
+        .carousel-level {
+            width: 33.333%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .scratch-container {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            background: #1B1B1B;
+            border-radius: 11px;
+            overflow: hidden;
+        }
+
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .scratch-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 11px;
+        }
+
+        .pagination {
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pagination-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-dot.active {
+            background: #E91E63;
+        }
+
+        .pagination-arrow {
+            color: #E91E63;
+            font-size: 20px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .pagination-arrow:hover {
+            background: rgba(233, 30, 99, 0.2);
+            transform: scale(1.1);
+        }
+
+        .pagination-arrow.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .task {
+            width: 100%;
+            max-width: 400px;
+            height: 150px;
+            margin: 0 auto;
+            background: #1B1B1B;
+            border-radius: 11px;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .instructions {
+            font-size: 10px;
+            color: #888;
+            margin-top: 25px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="carousel-container">
+    <div class="carousel">
+        <!-- Легкий уровень -->
+        <div class="carousel-level" data-level="easy">
+            <h1>ЛЕГКИЙ</h1>
+            <div class="subtitle">Уровень</div>
+
+            <div class="cards-grid">
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card1-easy"></canvas>
+                </div>
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card2-easy"></canvas>
+                </div>
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card3-easy"></canvas>
+                </div>
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card4-easy"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Средний уровень -->
+        <div class="carousel-level" data-level="medium">
+            <h1>СРЕДНИЙ</h1>
+            <div class="subtitle">Уровень</div>
+
+            <div class="cards-grid">
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card1-medium"></canvas>
+                </div>
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card2-medium"></canvas>
+                </div>
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card3-medium"></canvas>
+                </div>
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card4-medium"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Сложный уровень -->
+        <div class="carousel-level" data-level="hard">
+            <h1>СЛОЖНЫЙ</h1>
+            <div class="subtitle">Уровень</div>
+
+            <div class="cards-grid">
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card1-hard"></canvas>
+                </div>
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card2-hard"></canvas>
+                </div>
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card3-hard"></canvas>
+                </div>
+                <div class="scratch-container">
+                    <canvas class="scratch-canvas" id="card4-hard"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pagination-container">
+    <div class="pagination-arrow left">❮</div>
+
+    <div class="pagination">
+        <div class="pagination-dot active" data-index="0"></div>
+        <div class="pagination-dot" data-index="1"></div>
+        <div class="pagination-dot" data-index="2"></div>
+    </div>
+
+    <div class="pagination-arrow right">❯</div>
+</div>
+
+<div class="task">
+    <canvas class="scratch-canvas" id="taskCard-easy" data-level="easy"></canvas>
+    <canvas class="scratch-canvas" id="taskCard-medium" data-level="medium"></canvas>
+    <canvas class="scratch-canvas" id="taskCard-hard" data-level="hard"></canvas>
+</div>
+
+<div class="instructions">Потрите область карточки, чтобы увидеть позу или задание</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
