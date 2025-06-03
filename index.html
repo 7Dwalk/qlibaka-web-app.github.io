@@ -53,6 +53,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 25px;
+            margin-bottom: 25px;
         }
 
         .scratch-container {
@@ -69,16 +70,30 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
-            margin: 25px 0;
+            margin: 0 25px 25px;
         }
 
+        .pose-image,
         .scratch-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 11px;
+            object-fit: cover;
+            z-index: 1; /* Канвас сверху */
+        }
+
+        .pose-image {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 11px;
+            object-fit: cover;
+            z-index: 0; /* Картинка внизу */
+            transform: scale(0.990);
+            transform-origin: center;
         }
 
         .pagination {
@@ -125,22 +140,45 @@
             pointer-events: none;
         }
 
-        .task {
+        .task-container {
             width: 100%;
             max-width: 400px;
-            height: 150px;
             margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-carousel {
+            display: flex;
+            transition: transform 0.5s ease;
+            width: 300%;
+        }
+
+        .task-level {
+            width: 33.333%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .task {
+            width: 100%;
+            height: 150px;
             background: #1B1B1B;
             border-radius: 11px;
             position: relative;
             overflow: hidden;
         }
 
-
         .instructions {
             font-size: 10px;
             color: #888;
             margin-top: 25px;
+        }
+
+        .loading {
+            color: #aaa;
+            font-size: 16px;
+            margin: 20px 0;
         }
 
     </style>
@@ -152,19 +190,23 @@
         <div class="carousel-level" data-level="easy">
             <h1>ЛЕГКИЙ</h1>
             <div class="subtitle">Уровень</div>
-
-            <div class="cards-grid">
+            <div class="loading">Загрузка поз...</div>
+            <div class="cards-grid" id="easy-cards">
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card1-easy"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card2-easy"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card3-easy"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card4-easy"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
             </div>
         </div>
@@ -173,19 +215,23 @@
         <div class="carousel-level" data-level="medium">
             <h1>СРЕДНИЙ</h1>
             <div class="subtitle">Уровень</div>
-
-            <div class="cards-grid">
+            <div class="loading">Загрузка поз...</div>
+            <div class="cards-grid" id="medium-cards">
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card1-medium"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card2-medium"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card3-medium"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card4-medium"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
             </div>
         </div>
@@ -194,19 +240,23 @@
         <div class="carousel-level" data-level="hard">
             <h1>СЛОЖНЫЙ</h1>
             <div class="subtitle">Уровень</div>
-
-            <div class="cards-grid">
+            <div class="loading">Загрузка поз...</div>
+            <div class="cards-grid" id="hard-cards">
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card1-hard"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card2-hard"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card3-hard"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
                 <div class="scratch-container">
-                    <canvas class="scratch-canvas" id="card4-hard"></canvas>
+                    <canvas class="scratch-canvas"></canvas>
+                    <img class="pose-image" alt="Поза">
                 </div>
             </div>
         </div>
@@ -225,182 +275,263 @@
     <div class="pagination-arrow right">❯</div>
 </div>
 
-<div class="task">
-    <canvas class="scratch-canvas" id="taskCard-easy" data-level="easy"></canvas>
-    <canvas class="scratch-canvas" id="taskCard-medium" data-level="medium"></canvas>
-    <canvas class="scratch-canvas" id="taskCard-hard" data-level="hard"></canvas>
+<div class="task-container">
+    <div class="task-carousel">
+        <div class="task-level" data-level="easy">
+            <div class="task">
+                <canvas class="scratch-canvas" id="taskCard-easy"></canvas>
+            </div>
+        </div>
+        <div class="task-level" data-level="medium">
+            <div class="task">
+                <canvas class="scratch-canvas" id="taskCard-medium"></canvas>
+            </div>
+        </div>
+        <div class="task-level" data-level="hard">
+            <div class="task">
+                <canvas class="scratch-canvas" id="taskCard-hard"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="instructions">Потрите область карточки, чтобы увидеть позу или задание</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Карусель уровней
-        const carousel = document.querySelector('.carousel');
-        const levels = document.querySelectorAll('.carousel-level');
-        const dots = document.querySelectorAll('.pagination-dot');
-        // **CORRECTED SELECTOR:**  Use 'pagination-arrow' to match the HTML
-        const arrows = document.querySelectorAll('.pagination-arrow'); // Single set of arrows
-        let currentIndex = 0;
+        // Имитация данных из poses_data.json
+        const posesData = {
+            "poses": [
+                {"id": 466, "name": "Поза 1", "level": "easy", "description": "Описание позы 1"},
+                {"id": 467, "name": "Поза 2", "level": "easy", "description": "Описание позы 2"},
+                {"id": 468, "name": "Поза 3", "level": "easy", "description": "Описание позы 3"},
+                {"id": 469, "name": "Поза 4", "level": "easy", "description": "Описание позы 4"},
+                {"id": 470, "name": "Поза 5", "level": "easy", "description": "Описание позы 5"},
+                {"id": 471, "name": "Поза 6", "level": "medium", "description": "Описание позы 6"},
+                {"id": 472, "name": "Поза 7", "level": "medium", "description": "Описание позы 7"},
+                {"id": 473, "name": "Поза 8", "level": "medium", "description": "Описание позы 8"},
+                {"id": 474, "name": "Поза 9", "level": "medium", "description": "Описание позы 9"},
+                {"id": 475, "name": "Поза 10", "level": "medium", "description": "Описание позы 10"},
+                {"id": 489, "name": "Поза 11", "level": "hard", "description": "Описание позы 11"},
+                {"id": 490, "name": "Поза 12", "level": "hard", "description": "Описание позы 12"},
+                {"id": 491, "name": "Поза 13", "level": "hard", "description": "Описание позы 13"},
+                {"id": 14, "name": "Поза 14", "level": "hard", "description": "Описание позы 14"},
+                {"id": 15, "name": "Поза 15", "level": "hard", "description": "Описание позы 15"}
+            ]
+        };
 
-        function updateCarousel() {
-            carousel.style.transform = `translateX(-${currentIndex * 33.333}%)`;
-
-            // Обновляем пагинацию
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentIndex);
-            });
-
-            // Обновляем состояние стрелок
-            // Use 'arrows' here, as it's the single set of arrow elements.  Also index 0 and 1.
-            arrows[0].classList.toggle('disabled', currentIndex === 0);
-            arrows[1].classList.toggle('disabled', currentIndex === levels.length - 1);
-            updateTaskCard();
+        // Функция для получения случайных уникальных поз по уровню сложности
+        function getRandomPosesByLevel(level, count) {
+            const filteredPoses = posesData.poses.filter(pose => pose.level === level);
+            const shuffled = [...filteredPoses].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
         }
 
-        function updateTaskCard() {
+        // Загрузка поз для каждого уровня
+        function loadPoses() {
             const levels = ['easy', 'medium', 'hard'];
-            const currentLevel = levels[currentIndex];
 
-            // Скрываем все canvas задач и показываем нужный
-            document.querySelectorAll('.task .scratch-canvas').forEach(canvas => {
-                canvas.style.display = canvas.dataset.level === currentLevel ? 'block' : 'none';
+            levels.forEach(level => {
+                const randomPoses = getRandomPosesByLevel(level, 4);
+                const cardsContainer = document.getElementById(`${level}-cards`);
+                const loadingElement = cardsContainer.previousElementSibling;
+
+                // Показываем контейнер с карточками и скрываем элемент загрузки
+                cardsContainer.style.display = 'grid';
+                loadingElement.style.display = 'none';
+
+                // Заполняем карточки изображениями поз
+                const poseImages = cardsContainer.querySelectorAll('.pose-image');
+                randomPoses.forEach((pose, index) => {
+                    // В реальном приложении путь будет выглядеть как `poses/pictures/${pose.id}.jpg`
+                    poseImages[index].src = `poses/pictures/${pose.id}.png`;
+                    poseImages[index].alt = pose.name;
+
+                    // Добавляем описание в атрибут data-description
+                    poseImages[index].dataset.description = pose.description;
+                });
             });
 
-            // Инициализируем скретч-эффект для текущей карточки задания, если еще не инициализирован
-            const currentTaskCanvas = document.querySelector(`.task .scratch-canvas[data-level="${currentLevel}"]`);
-            if (currentTaskCanvas && !currentTaskCanvas.dataset.initialized) {
-                initScratchEffect(currentTaskCanvas);
-                currentTaskCanvas.dataset.initialized = "true";
-            }
+            // Инициализируем карусель после загрузки данных
+            initCarousel();
         }
 
-        // Обработчики для стрелок
-        arrows.forEach(arrow => {
-            arrow.addEventListener('click', function () {
-                if (this.classList.contains('left')) {
-                    currentIndex = Math.max(0, currentIndex - 1);
+        // Карусель уровней
+        function initCarousel() {
+            const carousel = document.querySelector('.carousel');
+            const taskCarousel = document.querySelector('.task-carousel');
+            const levels = document.querySelectorAll('.carousel-level');
+            const dots = document.querySelectorAll('.pagination-dot');
+            const arrows = document.querySelectorAll('.pagination-arrow');
+            let currentIndex = 0;
+
+            function updateCarousel() {
+                const translateValue = `translateX(-${currentIndex * 33.333}%)`;
+                carousel.style.transform = translateValue;
+                taskCarousel.style.transform = translateValue;
+
+                // Обновляем пагинацию
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+
+                // Обновляем состояние стрелок
+                arrows[0].classList.toggle('disabled', currentIndex === 0);
+                arrows[1].classList.toggle('disabled', currentIndex === levels.length - 1);
+            }
+
+            // Обработчики для стрелок
+            arrows.forEach(arrow => {
+                arrow.addEventListener('click', function () {
+                    if (this.classList.contains('left')) {
+                        currentIndex = Math.max(0, currentIndex - 1);
+                    } else {
+                        currentIndex = Math.min(levels.length - 1, currentIndex + 1);
+                    }
+                    updateCarousel();
+                });
+            });
+
+            // Обработчики для точек пагинации
+            dots.forEach(dot => {
+                dot.addEventListener('click', function () {
+                    currentIndex = parseInt(this.getAttribute('data-index'));
+                    updateCarousel();
+                });
+            });
+
+            // Инициализация скретч-карточек
+            function initScratchCards() {
+                const canvases = document.querySelectorAll('.scratch-canvas');
+                canvases.forEach(canvas => {
+                    initScratchEffect(canvas);
+                });
+            }
+
+            function initScratchEffect(canvas) {
+                if (!canvas) return;
+
+                const ctx = canvas.getContext('2d');
+
+                // Устанавливаем размеры canvas в соответствии с CSS размерами
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+
+                // Заполняем слой цветом (слой для стирания)
+                ctx.fillStyle = '#1B1B1B';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Текст под слоем (пример)
+                ctx.fillStyle = '#E91E63';
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'center';
+
+                // Разный текст для карточек поз и задания
+                if (canvas.id.includes('taskCard')) {
+                    ctx.fillText('Задание', canvas.width / 2, canvas.height / 2);
                 } else {
-                    currentIndex = Math.min(levels.length - 1, currentIndex + 1);
-                }
-                updateCarousel();
-            });
-        });
-
-        // Обработчики для точек пагинации
-        dots.forEach(dot => {
-            dot.addEventListener('click', function () {
-                currentIndex = parseInt(this.getAttribute('data-index'));
-                updateCarousel();
-            });
-        });
-
-        // Инициализация скретч-карточек
-        function initScratchCards() {
-            // Здесь должна быть логика инициализации скретч-карточек
-            // Для каждого canvas можно использовать библиотеку или свою реализацию
-            console.log('Инициализация скретч-карточек...');
-
-            // Пример для одной карточки:
-            const canvases = document.querySelectorAll('.carousel .scratch-canvas');
-            canvases.forEach(canvas => {
-                // Инициализация скретч-эффекта
-                initScratchEffect(canvas);
-            });
-            updateTaskCard();
-        }
-
-        function initScratchEffect(canvas) {
-            if (!canvas) return;
-
-            const ctx = canvas.getContext('2d');
-
-            // Устанавливаем размеры canvas в соответствии с CSS размерами
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            // Заполняем слой цветом (слой для стирания)
-            ctx.fillStyle = '#1B1B1B';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Текст под слоем (пример)
-            ctx.fillStyle = '#E91E63';
-            ctx.font = '20px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Сотри меня', canvas.width / 2, canvas.height / 2);
-
-            let isDrawing = false;
-            let lastX = 0;
-            let lastY = 0;
-
-            // Вспомогательная функция для получения координат относительно canvas
-            function getPointerPos(e) {
-                const rect = canvas.getBoundingClientRect();
-                let x, y;
-
-                if (e.touches && e.touches.length > 0) {
-                    x = e.touches[0].clientX - rect.left;
-                    y = e.touches[0].clientY - rect.top;
-                } else {
-                    x = e.clientX - rect.left;
-                    y = e.clientY - rect.top;
+                    ctx.fillText('Поза', canvas.width / 2, canvas.height / 2);
                 }
 
-                return {x, y};
+                let isDrawing = false;
+                let lastX = 0;
+                let lastY = 0;
+
+                // Вспомогательная функция для получения координат относительно canvas
+                function getPointerPos(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    let x, y;
+
+                    if (e.touches && e.touches.length > 0) {
+                        x = e.touches[0].clientX - rect.left;
+                        y = e.touches[0].clientY - rect.top;
+                    } else {
+                        x = e.clientX - rect.left;
+                        y = e.clientY - rect.top;
+                    }
+
+                    return {x, y};
+                }
+
+                function startDrawing(e) {
+                    e.preventDefault();
+                    isDrawing = true;
+                    const pos = getPointerPos(e);
+                    lastX = pos.x;
+                    lastY = pos.y;
+                }
+
+                function draw(e) {
+                    if (!isDrawing) return;
+                    e.preventDefault();
+
+                    const pos = getPointerPos(e);
+
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = 20;
+                    ctx.lineCap = 'round';
+
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(pos.x, pos.y);
+                    ctx.stroke();
+
+                    lastX = pos.x;
+                    lastY = pos.y;
+
+                    // Показываем изображение позы, когда достаточно стерто
+                    checkReveal(canvas);
+                }
+
+                function stopDrawing(e) {
+                    e.preventDefault();
+                    isDrawing = false;
+                }
+
+                // Проверяем, достаточно ли стерто, чтобы показать изображение
+                function checkReveal(canvas) {
+                    const ctx = canvas.getContext('2d');
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const pixels = imageData.data;
+                    let transparentPixels = 0;
+
+                    for (let i = 3; i < pixels.length; i += 4) {
+                        if (pixels[i] === 0) {
+                            transparentPixels++;
+                        }
+                    }
+
+                    const transparentPercent = (transparentPixels / (pixels.length / 4)) * 100;
+
+                    if (transparentPercent > 30) { // 30% стерто - показываем изображение
+                        const container = canvas.closest('.scratch-container');
+                        if (container) {
+                            const poseImage = container.querySelector('.pose-image');
+                            if (poseImage) {
+                                poseImage.style.display = 'block';
+                            }
+                        }
+                    }
+                }
+
+                // Подписываемся на события мыши и касания
+                canvas.addEventListener('mousedown', startDrawing);
+                canvas.addEventListener('touchstart', startDrawing);
+
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('touchmove', draw);
+
+                canvas.addEventListener('mouseup', stopDrawing);
+                canvas.addEventListener('mouseout', stopDrawing);
+                canvas.addEventListener('touchend', stopDrawing);
+                canvas.addEventListener('touchcancel', stopDrawing);
             }
 
-            function startDrawing(e) {
-                e.preventDefault();  // важно для touch, чтобы не скроллило страницу
-                isDrawing = true;
-                const pos = getPointerPos(e);
-                lastX = pos.x;
-                lastY = pos.y;
-            }
-
-            function draw(e) {
-                if (!isDrawing) return;
-                e.preventDefault();
-
-                const pos = getPointerPos(e);
-
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.lineWidth = 20;
-                ctx.lineCap = 'round';
-
-                ctx.beginPath();
-                ctx.moveTo(lastX, lastY);
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-
-                lastX = pos.x;
-                lastY = pos.y;
-            }
-
-            function stopDrawing(e) {
-                e.preventDefault();
-                isDrawing = false;
-            }
-
-            // Подписываемся на события мыши и касания
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('touchstart', startDrawing);
-
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('touchmove', draw);
-
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
-            canvas.addEventListener('touchend', stopDrawing);
-            canvas.addEventListener('touchcancel', stopDrawing);
+            updateCarousel();
+            initScratchCards();
         }
 
-        // Инициализация при загрузке страницы
-        updateCarousel(); // Update the carousel *before* initializing the scratch cards.
-        //It's important to update the Task Card based on current index
-        //after loading the page
-        initScratchCards();
-
-
+        loadPoses();
     });
 </script>
 </body>

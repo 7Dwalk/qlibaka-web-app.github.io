@@ -11,7 +11,7 @@
             color: white;
             text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 25px;
             overflow-x: hidden;
         }
 
@@ -19,6 +19,7 @@
             color: #E91E63;
             font-size: 36px;
             margin-bottom: 0;
+            margin-top: 0;
             transition: all 0.3s ease;
         }
 
@@ -52,6 +53,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 25px;
+            margin-bottom: 25px;
         }
 
         .scratch-container {
@@ -68,7 +70,7 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
-            margin: 25px 0;
+            margin: 0 25px 25px;
         }
 
         .scratch-canvas {
@@ -124,17 +126,34 @@
             pointer-events: none;
         }
 
-        .task {
+        .task-container {
             width: 100%;
             max-width: 400px;
-            height: 150px;
             margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-carousel {
+            display: flex;
+            transition: transform 0.5s ease;
+            width: 300%;
+        }
+
+        .task-level {
+            width: 33.333%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .task {
+            width: 100%;
+            height: 150px;
             background: #1B1B1B;
             border-radius: 11px;
             position: relative;
             overflow: hidden;
         }
-
 
         .instructions {
             font-size: 10px;
@@ -224,14 +243,29 @@
     <div class="pagination-arrow right">❯</div>
 </div>
 
-<div class="task">
-    <canvas class="scratch-canvas" id="taskCard-easy" data-level="easy"></canvas>
-    <canvas class="scratch-canvas" id="taskCard-medium" data-level="medium"></canvas>
-    <canvas class="scratch-canvas" id="taskCard-hard" data-level="hard"></canvas>
+<div class="task-container">
+    <div class="task-carousel">
+        <div class="task-level" data-level="easy">
+            <div class="task">
+                <canvas class="scratch-canvas" id="taskCard-easy"></canvas>
+            </div>
+        </div>
+        <div class="task-level" data-level="medium">
+            <div class="task">
+                <canvas class="scratch-canvas" id="taskCard-medium"></canvas>
+            </div>
+        </div>
+        <div class="task-level" data-level="hard">
+            <div class="task">
+                <canvas class="scratch-canvas" id="taskCard-hard"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="instructions">Потрите область карточки, чтобы увидеть позу или задание</div>
 
 <script src="/static/script.js"></script>
+
 </body>
 </html>
