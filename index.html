@@ -6,7 +6,11 @@
     <title>Скретч-карусель</title>
     <style>
         body {
-            background: #080808;
+            background: #121212;
+            background-image: url('background.JPEG');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
             font-family: Arial, sans-serif;
             color: white;
             text-align: center;
@@ -94,12 +98,11 @@
             height: 100%;
             object-fit: cover;
             z-index: 0; /* Картинка внизу */
-            transform: scale(0.990);
+            transform: scale(0.988);
             transform-origin: center;
         }
 
         .pagination {
-            margin: 25px 0;
             display: flex;
             justify-content: center;
             gap: 10px;
