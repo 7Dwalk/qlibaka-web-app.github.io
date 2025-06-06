@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Скретч-карусель</title>
+    <title>Flame Up</title>
     <style>
         body {
             background: #121212;
@@ -44,13 +44,33 @@
         .carousel {
             display: flex;
             transition: transform 0.5s ease;
-            width: 300%;
+            width: 400%;
         }
 
         .carousel-level {
-            width: 33.333%;
+            width: 25%;
             padding: 0 10px;
             box-sizing: border-box;
+        }
+
+        .welcome-content {
+            background: rgba(27, 27, 27, 0.8);
+            border-radius: 11px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .welcome-content h2 {
+            color: #E91E63;
+            font-size: 24px;
+            margin-top: 0;
+        }
+
+        .welcome-content p {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 15px;
         }
 
         .cards-grid {
@@ -156,11 +176,11 @@
         .task-carousel {
             display: flex;
             transition: transform 0.5s ease;
-            width: 300%;
+            width: 400%;
         }
 
         .task-level {
-            width: 33.333%;
+            width: 25%;
             padding: 0 10px;
             box-sizing: border-box;
         }
@@ -189,8 +209,23 @@
     </style>
 </head>
 <body>
+
 <div class="carousel-container">
     <div class="carousel">
+        <!-- Приветственный экран -->
+        <div class="carousel-level" data-level="welcome">
+            <h1>FLAME UP</h1>
+            <div class="subtitle">Секс игра для пар</div>
+
+            <div class="welcome-content">
+                <h2>Как играть?</h2>
+                <p>1. Перемещаясь стрелками, выберите уровень сложности.</p>
+                <p>2. Потрите карточки, чтобы открыть то, что под ними скрывается.</p>
+                <p>3. Выполняйте задания и пробуйте новые позы!</p>
+                <p>Игра поможет разнообразить вашу интимную жизнь и добавить страсти в отношения.</p>
+            </div>
+        </div>
+
         <!-- Легкий уровень -->
         <div class="carousel-level" data-level="easy">
             <h1>ЛЕГКИЙ</h1>
@@ -267,7 +302,6 @@
         </div>
     </div>
 </div>
-
 <div class="pagination-container">
     <div class="pagination-arrow left">❮</div>
 
@@ -275,13 +309,19 @@
         <div class="pagination-dot active" data-index="0"></div>
         <div class="pagination-dot" data-index="1"></div>
         <div class="pagination-dot" data-index="2"></div>
+        <div class="pagination-dot" data-index="3"></div>
     </div>
 
     <div class="pagination-arrow right">❯</div>
 </div>
-
 <div class="task-container">
     <div class="task-carousel">
+        <div class="task-level" data-level="welcome">
+            <div class="task">
+                <canvas class="text-canvas" id="welcomeText"
+                        style="position: absolute; top: 0; left: 0; z-index: 1;"></canvas>
+            </div>
+        </div>
         <div class="task-level" data-level="easy">
             <div class="task">
                 <canvas class="scratch-canvas" id="taskCard-easy"
@@ -289,6 +329,7 @@
                 <canvas class="text-canvas" id="taskText-easy"
                         style="position: absolute; top: 0; left: 0; z-index: 1;"></canvas>
             </div>
+            <div class="instructions">Потрите область карточки,<br>чтобы увидеть позу или задание</div>
         </div>
         <div class="task-level" data-level="medium">
             <div class="task">
@@ -297,6 +338,7 @@
                 <canvas class="text-canvas" id="taskText-medium"
                         style="position: absolute; top: 0; left: 0; z-index: 1;"></canvas>
             </div>
+            <div class="instructions">Потрите область карточки,<br>чтобы увидеть позу или задание</div>
         </div>
         <div class="task-level" data-level="hard">
             <div class="task">
@@ -305,11 +347,11 @@
                 <canvas class="text-canvas" id="taskText-hard"
                         style="position: absolute; top: 0; left: 0; z-index: 1;"></canvas>
             </div>
+            <div class="instructions">Потрите область карточки,<br>чтобы увидеть позу или задание</div>
         </div>
     </div>
 </div>
 
-<div class="instructions">Потрите область карточки,<br>чтобы увидеть позу или задание</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -340,7 +382,7 @@
                         // Заполняем карточки изображениями поз
                         const poseImages = cardsContainer.querySelectorAll('.pose-image');
                         randomPoses.forEach((pose, index) => {
-                            poseImages[index].src = pose.image_url;
+                            poseImages[index].src = `images/${pose.id}.png`;
                             poseImages[index].alt = pose.title;
 
                             // Добавляем описание в атрибут data-description
@@ -350,7 +392,38 @@
 
                     // Инициализируем карусель после загрузки данных
                     initCarousel();
+                    loadWelcomeScreen();
                     loadTasks(posesData.tasks);
+                }
+
+                function loadWelcomeScreen() {
+                    const textCanvas = document.getElementById('welcomeText');
+                    if (!textCanvas) return;
+
+                    const width = textCanvas.offsetWidth;
+                    const height = textCanvas.offsetHeight;
+                    textCanvas.width = width;
+                    textCanvas.height = height;
+
+                    const ctx = textCanvas.getContext('2d');
+                    ctx.clearRect(0, 0, width, height);
+
+                    // Градиентный фон
+                    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+                    gradient.addColorStop(0, '#E91E63');
+                    gradient.addColorStop(1, '#9C27B0');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, width, height);
+
+                    // Текст приветствия
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 24px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Добро пожаловать!', width / 2, 40);
+
+                    ctx.font = '16px Arial';
+                    ctx.fillText('Выберите уровень сложности', width / 2, 70);
+                    ctx.fillText('и начните игру', width / 2, 90);
                 }
 
                 function loadTasks(tasksData) {
@@ -420,7 +493,6 @@
                     });
                 }
 
-
                 function wrapText(ctx, text, maxWidth) {
                     const words = text.split(' ');
                     const lines = [];
@@ -453,7 +525,7 @@
                     let currentIndex = 0;
 
                     function updateCarousel() {
-                        const translateValue = `translateX(-${currentIndex * 33.333}%)`;
+                        const translateValue = `translateX(-${currentIndex * 25}%)`;
                         carousel.style.transform = translateValue;
                         taskCarousel.style.transform = translateValue;
 
@@ -489,7 +561,7 @@
 
                     // Инициализация скретч-карточек
                     function initScratchCards() {
-                        const canvases = document.querySelectorAll('.scratch-canvas');
+                        const canvases = document.querySelectorAll('.scratch-canvas:not(#welcomeText)');
                         canvases.forEach(canvas => {
                             initScratchEffect(canvas);
                         });
@@ -513,7 +585,11 @@
                         ctx.font = 'Bold 20px Arial';
                         ctx.textAlign = 'center';
 
-                        ctx.fillText('ПОЗА', canvas.width / 2, canvas.height / 2);
+                        if (canvas.id.startsWith('taskCard-')) {
+                            ctx.fillText('ЗАДАНИЕ', canvas.width / 2, canvas.height / 2);
+                        } else {
+                            ctx.fillText('ПОЗА', canvas.width / 2, canvas.height / 2);
+                        }
 
                         let isDrawing = false;
                         let lastX = 0;
